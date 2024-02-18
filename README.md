@@ -1,5 +1,4 @@
-[![Documentation Status](https://readthedocs.org/projects/digital-rivers/badge/?version=latest)]
-(https://digital-rivers.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/digital-rivers/badge/?version=latest)](https://digital-rivers.readthedocs.io/en/latest/?badge=latest)
 [![Python Versions](https://img.shields.io/pypi/pyversions/digitalrivers.png)](https://img.shields.io/pypi/pyversions/digitalrivers)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
