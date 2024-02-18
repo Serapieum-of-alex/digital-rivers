@@ -15,7 +15,7 @@ setup(
     description="DEM and raster data processing library",
     author="Mostafa Farrag",
     author_email="moah.farag@gmail.come",
-    url="https://github.com/MAfarrag/pyramids",
+    url="https://github.com/MAfarrag/digital-rivers",
     keywords=["GIS", "DEM", "Hydrology"],
     long_description=readme + "\n\n" + history,
     repository="https://github.com/MAfarrag/digital-rivers",

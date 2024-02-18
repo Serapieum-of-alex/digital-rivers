@@ -31,5 +31,5 @@ if missing_dependencies:
     raise ImportError("Missing required dependencies {0}".format(missing_dependencies))
 
 __doc__ = """
-pyramids - GIS utility package
+digital-rivers - GIS utility package
 """
