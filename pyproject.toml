@@ -1,5 +1,5 @@
 [project]
-name = "digitalrivers"
+name = "digital-rivers"
 version = "0.1.0"
 description = "DEM and raster data processing library"
 readme = {file = "README.md", content-type = "text/markdown"}
@@ -124,15 +124,12 @@ default = { features = ["dev"], solve-group = "default" }
 docs = { features = ["docs"], solve-group = "default" }
 py311 = { features = ["py311", "dev"], solve-group = "py311" }
 py312 = { features = ["py312", "dev"], solve-group = "py312" }
-py313 = { features = ["py313", "dev"], solve-group = "py313" }
 
 
 [tool.pixi.feature.py311.dependencies]
 python = "3.11.*"
 [tool.pixi.feature.py312.dependencies]
 python = "3.12.*"
-[tool.pixi.feature.py313.dependencies]
-python = "3.13.*"
 
 [tool.pixi.dependencies]
 pyramids = ">=0.7.3"
