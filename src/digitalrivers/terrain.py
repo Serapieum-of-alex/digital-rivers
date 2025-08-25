@@ -102,7 +102,7 @@ class Terrain(Dataset):
             path = ""
         else:
             driver = "GTiff"
-        color_df = Dataset._process_color_table(color_table)
+        color_df = self._process_color_table(color_table)
 
         temp_dir = tempfile.mkdtemp()
         color_table_path = os.path.join(temp_dir, f"{uuid.uuid1()}.txt")
