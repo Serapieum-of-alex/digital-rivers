@@ -26,6 +26,7 @@ class Terrain(Dataset):
                 path to save the color relief raster.
             color_table: DataFrame, default is None.
                 DataFrame with columns: band, values, color
+                    ```text
                       values    color
                     0      1  #709959
                     1      2  #F2EEA2
@@ -33,7 +34,9 @@ class Terrain(Dataset):
                     3      1  #C28C7C
                     4      2  #D6C19C
                     5      3  #D6C19C
+                    ```
                 or DataFrame with columns: values, red, green, blue, alpha, (the alpha column is optional)
+                    ```text
                       values    red  green   blue  alpha
                     0      1    112    153     89    255
                     1      2    242    238    162    255
@@ -41,61 +44,56 @@ class Terrain(Dataset):
                     3      1    194    140    124    255
                     4      2    214    193    156    255
                     5      3    214    193    156    255
+                    ```
+        Returns:
+            Dataset:
+                Dataset with the color relief with four bands read, green, blue, and alpha.
 
-        Returns
-        -------
-        Dataset:
-            Dataset with the color relief with four bands read, green, blue, and alpha.
+        Examples:
+            - First create a one band dataset, consisting of 10 columns and 10 rows, with random values between 0 and 15.
+                ```python
+                >>> import numpy as np
+                >>> arr = np.random.randint(0, 15, size=(10, 10))
+                >>> dataset = Dataset.create_from_array(arr, top_left_corner=(0, 0), cell_size=0.05, epsg=4326)
+                ```
+            - Now let's create the color table using hex colors.
+                ```python
+                >>> color_hex = ["#709959", "#F2EEA2", "#F2CE85", "#C28C7C", "#D6C19C"]
+                >>> values = [1, 3, 5, 7, 9]
+                >>> df = pd.DataFrame(columns=["values", "color"])
+                >>> df.loc[:, "values"] = values
+                >>> df.loc[:, "color"] = color_hex
+                ```
+            - Now let's create the color relief for the dataset using the color table `DataFrame`.
+                ```python
+                >>> color_relief = dataset.color_relief(band=0, color_table=df)
+                >>> print(color_relief) # doctest: +SKIP
+                <BLANKLINE>
+                            Cell size: 0.05
+                            Dimension: 10 * 10
+                            EPSG: 4326
+                            Number of Bands: 4
+                            Band names: ['Band_1', 'Band_2', 'Band_3', 'Band_4']
+                            Mask: None
+                            Data type: byte
+                            projection: GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]
+                            Metadata: {}
+                            File: ...
+                <BLANKLINE>
+                >>> print(color_relief.band_color)
+                {0: 'red', 1: 'green', 2: 'blue', 3: 'alpha'}
+                ```
+            - The result color relief dataset will have 4 bands red, green, blue, and alpha. with values from 0 to 255.
+            - To plot the color relief dataset, you can use the `plot` method. but you need to provide the the rgb indices
+                with the alpha index as the fourth index, otherwise the alpha band will be missing.
+                ```python
+                >>> fig, ax = color_relief.plot(rgb=[0, 1, 2, 3])
 
-        Examples
-        --------
-        - First create a one band dataset, consisting of 10 columns and 10 rows, with random values between 0 and 15.
+                ```
+            ![color-relief](./../_images/dataset/color-relief.png)
 
-            >>> import numpy as np
-            >>> arr = np.random.randint(0, 15, size=(10, 10))
-            >>> dataset = Dataset.create_from_array(arr, top_left_corner=(0, 0), cell_size=0.05, epsg=4326)
-
-        - Now let's create the color table using hex colors.
-        color.
-
-            >>> color_hex = ["#709959", "#F2EEA2", "#F2CE85", "#C28C7C", "#D6C19C"]
-            >>> values = [1, 3, 5, 7, 9]
-            >>> df = pd.DataFrame(columns=["values", "color"])
-            >>> df.loc[:, "values"] = values
-            >>> df.loc[:, "color"] = color_hex
-
-        - Now let's create the color relief for the dataset using the color table `DataFrame`.
-
-            >>> color_relief = dataset.color_relief(band=0, color_table=df)
-            >>> print(color_relief) # doctest: +SKIP
-            <BLANKLINE>
-                        Cell size: 0.05
-                        Dimension: 10 * 10
-                        EPSG: 4326
-                        Number of Bands: 4
-                        Band names: ['Band_1', 'Band_2', 'Band_3', 'Band_4']
-                        Mask: None
-                        Data type: byte
-                        projection: GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]
-                        Metadata: {}
-                        File: ...
-            <BLANKLINE>
-            >>> print(color_relief.band_color)
-            {0: 'red', 1: 'green', 2: 'blue', 3: 'alpha'}
-
-        - The result color relief dataset will have 4 bands red, green, blue, and alpha. with values from 0 to 255.
-        - To plot the color relief dataset, you can use the `plot` method. but you need to provide the the rgb indices
-            with the alpha index as the fourth index, otherwise the alpha band will be missing.
-
-            >>> fig, ax = color_relief.plot(rgb=[0, 1, 2, 3])
-
-        .. image:: /_images/dataset/color-relief.png
-            :alt: Example Image
-            :align: center
-
-        See Also
-        --------
-        Dataset.hill_shade: create a hill-shade for a band in the Dataset.
+        See Also:
+            Dataset.hill_shade: create a hill-shade for a band in the Dataset.
         """
         if path is None:
             driver = "MEM"
@@ -149,87 +147,82 @@ class Terrain(Dataset):
         - Vertical exaggeration (Z-factor): the vertical exaggeration is used to emphasize the vertical features of the
             terrain.
 
-        .. note::
-
+        Notes:
             if the `hill_shade` parameters are given as lists then the hill shade will be calculated for each set
             of parameter and then the average will be returned.
 
-        Parameters
-        ----------
-        band: int
-            band index.
-        azimuth: Union[List, int, float]
-            The source of light direction, it is measured clockwise from the north. zero means from north to south.
-            45 degrees means from the northeast to the southwest.
-        altitude: Union[List, int, float]
-            The source of light elevation, it is measured in degrees from the horizon. zero means from the horizon.
-            90 degrees means from the zenith.
-            the overall image gets brighter as the light source gets closer to the zenith. The brightest slopes/DEM
-            features will be perpendicular to the light source, and the darkest will be angled 90˚ or more away.
-        vertical_exaggeration: Union[List, int, float]
-            Vertical exaggeration, the vertical exaggeration It is used to emphasize the
-            vertical features of the terrain.
-        scale: Union[List, int, float]
-            the scale is the ratio of vertical units to horizontal. If the horizontal unit of the source DEM is
-            degrees (e.g Lat/Long WGS84 projection), you can use scale=111120 if the vertical units are meters
-            (or scale=370400 if they are in feet).
-        path: str, optional, default is None
-            path to save the hill-shade raster.
-        weights: List[int], default is None.
-            list of weights to combine the hill-shades if the other parameters are given as lists, an average hill
-            shade will be calculated based on the weights. if None, the weights will be equal.
-        **kwargs:
-            multi_directional: bool
-                if True, the hill shade will be calculated for multiple azimuth values [225, 270, 315, 360] each with a
-                altitude of 30 degrees, and then the average will be returned. with multi_directional = True any given
-                azimuth will be ignored.
-                For more details visit: https://pubs.usgs.gov/of/1992/of92-422/of92-422.pdf
-            combined: bool
-                combined shading, a combination of slope and oblique shading.
-            igor: bool
-                shading which tries to minimize effects on other map features beneath. with `igor=True` the altitude
-                will be calculated ignored.
-                For more details visit: https://maperitive.net/docs/Commands/GenerateReliefImageIgor.html
+        Args:
+            band: int
+                band index.
+            azimuth: Union[List, int, float]
+                The source of light direction, it is measured clockwise from the north. zero means from north to south.
+                45 degrees means from the northeast to the southwest.
+            altitude: Union[List, int, float]
+                The source of light elevation, it is measured in degrees from the horizon. zero means from the horizon.
+                90 degrees means from the zenith.
+                the overall image gets brighter as the light source gets closer to the zenith. The brightest slopes/DEM
+                features will be perpendicular to the light source, and the darkest will be angled 90˚ or more away.
+            vertical_exaggeration: Union[List, int, float]
+                Vertical exaggeration, the vertical exaggeration It is used to emphasize the
+                vertical features of the terrain.
+            scale: Union[List, int, float]
+                the scale is the ratio of vertical units to horizontal. If the horizontal unit of the source DEM is
+                degrees (e.g Lat/Long WGS84 projection), you can use scale=111120 if the vertical units are meters
+                (or scale=370400 if they are in feet).
+            path: str, optional, default is None
+                path to save the hill-shade raster.
+            weights: List[int], default is None.
+                list of weights to combine the hill-shades if the other parameters are given as lists, an average hill
+                shade will be calculated based on the weights. if None, the weights will be equal.
+            **kwargs:
+                multi_directional: bool
+                    if True, the hill shade will be calculated for multiple azimuth values [225, 270, 315, 360] each with a
+                    altitude of 30 degrees, and then the average will be returned. with multi_directional = True any given
+                    azimuth will be ignored.
+                    For more details visit: https://pubs.usgs.gov/of/1992/of92-422/of92-422.pdf
+                combined: bool
+                    combined shading, a combination of slope and oblique shading.
+                igor: bool
+                    shading which tries to minimize effects on other map features beneath. with `igor=True` the altitude
+                    will be calculated ignored.
+                    For more details visit: https://maperitive.net/docs/Commands/GenerateReliefImageIgor.html
 
-        Returns
-        -------
-        Dataset: 8-bit
-            Dataset with the hill-shade created.
+        Returns:
+            Dataset: 8-bit
+                Dataset with the hill-shade created.
 
-        Examples
-        --------
-        - First create a one band dataset, consisting of 10 columns and 10 rows, with random values between 0 and 15.
+        Examples:
+            - First create a one band dataset, consisting of 10 columns and 10 rows, with random values between 0 and 15.
+                ```python
+                >>> import numpy as np
+                >>> arr = np.random.randint(0, 15, size=(100, 100))
+                >>> dataset = Dataset.create_from_array(arr, top_left_corner=(0, 0), cell_size=0.05, epsg=4326)
 
-            >>> import numpy as np
-            >>> arr = np.random.randint(0, 15, size=(100, 100))
-            >>> dataset = Dataset.create_from_array(arr, top_left_corner=(0, 0), cell_size=0.05, epsg=4326)
+                >>> hill_shade = dataset.hill_shade(
+                ...     band=0, altitude=45, azimuth=315, vertical_exaggeration=1, scale=1
+                ... )
 
-            >>> hill_shade = dataset.hill_shade(
-            ...     band=0, altitude=45, azimuth=315, vertical_exaggeration=1, scale=1
-            ... )
+                >>> print(hill_shade.dtype) # doctest: +SKIP
+                ['byte']
+                >>> hill_shade.plot() # doctest: +SKIP
+                ```
+                ![hill-shade](./../_images/dataset/hill-shade.png)
+                ```python
+                >>> hill_shade.stats() # doctest: +SKIP
+                        min    max       mean        std
+                Band_1  1.0  223.0  58.880951  71.079056
+                ```
+            - You can also provide the function with a list os values for each parameter, then the functions will
+                calculate the hill shade for each set of parameters and then the average will be returned.
+                ```python
+                >>> hill_shade = dataset.hill_shade(
+                ...     band=0, azimuth=[315, 45], altitude=[45, 45], vertical_exaggeration=[1, 1], scale=[1, 1]
+                ... )
 
-            >>> print(hill_shade.dtype) # doctest: +SKIP
-            ['byte']
-            >>> hill_shade.plot() # doctest: +SKIP
+                >>> hill_shade.plot() # doctest: +SKIP
 
-            .. image:: /_images/dataset/hill-shade.png
-                :alt: Example Image
-                :align: center
-
-            >>> hill_shade.stats() # doctest: +SKIP
-                    min    max       mean        std
-            Band_1  1.0  223.0  58.880951  71.079056
-
-        - You can also provide the function with a list os values for each parameter, then the functions will
-            calculate the hill shade for each set of parameters and then the average will be returned.
-
-            >>> hill_shade = dataset.hill_shade(
-            ...     band=0, azimuth=[315, 45], altitude=[45, 45], vertical_exaggeration=[1, 1], scale=[1, 1]
-            ... )
-
-            >>> hill_shade.plot() # doctest: +SKIP
-
-            ![hill-shade-multi](./../_images/dataset/hill-shade-multi.png)
+                ```
+                ![hill-shade-multi](./../_images/dataset/hill-shade-multi.png)
 
         See Also:
             Dataset.color_relief: create a color relief for a band in the Dataset.
@@ -353,54 +346,49 @@ class Terrain(Dataset):
     ) -> "Dataset":
         """Slope.
 
-        Parameters
-        ----------
-        band: int, default is 0.
-            band index.
-        scale: Union[List, int, float]
-            the scale is the ratio of vertical units to horizontal. If the horizontal unit of the source DEM is
-            degrees (e.g., Lat/Long WGS84 projection), you can use scale=111120 if the vertical units are meters
-            (or scale=370400 if they are in feet).
-        slope_format: str, default is 'degree'.
-            The output slope format. It can be 'degree' or 'percent'.
-        algorithm: str, default is "Wilson".
-            The algorithm to calculate the slope. It can be one of 'Horn', 'ZevenbergenThorne' for hill_shade,
-            slope or aspect. 'Wilson'. The literature suggests Zevenbergen & Thorne to be more suited to smooth
-            landscapes, whereas Horn's formula.
-            to perform better on rougher terrain.
-        path: str, optional, default is None
-            path to save the hill-shade raster.
-        creation_options: List[str], default is None.
-            Additional creation options for the output raster. if None, the default creation options
-            (['COMPRESS=DEFLATE', 'PREDICTOR=2']) will be used.
+        Args:
+            band: int, default is 0.
+                band index.
+            scale: Union[List, int, float]
+                the scale is the ratio of vertical units to horizontal. If the horizontal unit of the source DEM is
+                degrees (e.g., Lat/Long WGS84 projection), you can use scale=111120 if the vertical units are meters
+                (or scale=370400 if they are in feet).
+            slope_format: str, default is 'degree'.
+                The output slope format. It can be 'degree' or 'percent'.
+            algorithm: str, default is "Wilson".
+                The algorithm to calculate the slope. It can be one of 'Horn', 'ZevenbergenThorne' for hill_shade,
+                slope or aspect. 'Wilson'. The literature suggests Zevenbergen & Thorne to be more suited to smooth
+                landscapes, whereas Horn's formula.
+                to perform better on rougher terrain.
+            path: str, optional, default is None
+                path to save the hill-shade raster.
+            creation_options: List[str], default is None.
+                Additional creation options for the output raster. if None, the default creation options
+                (['COMPRESS=DEFLATE', 'PREDICTOR=2']) will be used.
 
 
-        Returns
-        -------
-        Dataset:
-            Dataset with the calculated slope, and the no_data_value is -9999.0.
+        Returns:
+            Dataset:
+                Dataset with the calculated slope, and the no_data_value is -9999.0.
 
-        Examples
-        --------
-        - First create a one band dataset, consisting of 10 columns and 10 rows, with random values between 0 and 15.
+        Examples:
+            - First create a one band dataset, consisting of 10 columns and 10 rows, with random values between 0 and 15.
+                ```python
+                >>> import numpy as np
+                >>> arr = np.random.randint(0, 15, size=(10, 10))
+                >>> dataset = Dataset.create_from_array(arr, top_left_corner=(0, 0), cell_size=0.05, epsg=4326)
+                ```
+            - Now let's create the slope for the dataset.
+                ```python
+                >>> slope = dataset.slope()
+                >>> fig, ax = slope.plot()
 
-            >>> import numpy as np
-            >>> arr = np.random.randint(0, 15, size=(10, 10))
-            >>> dataset = Dataset.create_from_array(arr, top_left_corner=(0, 0), cell_size=0.05, epsg=4326)
+                ```
+                ![slope](./../_images/dataset/slope.png)
 
-        - Now let's create the slope for the dataset.
-
-            >>> slope = dataset.slope()
-            >>> fig, ax = slope.plot()
-
-        .. image:: /_images/dataset/slope.png
-            :alt: Example Image
-            :align: center
-
-        See Also
-        --------
-        Dataset.hill_shade: create a hill-shade for a band in the Dataset.
-        Dataset.color_relief: create a color relief for a band in the Dataset.
+        See Also:
+            Dataset.hill_shade: create a hill-shade for a band in the Dataset.
+            Dataset.color_relief: create a color relief for a band in the Dataset.
         """
         if path is None:
             driver = "MEM"
@@ -438,58 +426,53 @@ class Terrain(Dataset):
     ) -> "Dataset":
         """Aspect.
 
-        Parameters
-        ----------
-        band: int, default is 0.
-            band index.
-        scale: Union[List, int, float]
-            the scale is the ratio of vertical units to horizontal. If the horizontal unit of the source DEM is
-            degrees (e.g., Lat/Long WGS84 projection), you can use scale=111120 if the vertical units are meters
-            (or scale=370400 if they are in feet).
-        zero_flat_surface: bool, default is False.
-            If True, the slope of a flat surface will be zero. If False, the slope of a flat surface will be
-            no_data_value.
-        algorithm: str, default is "Wilson".
-            The algorithm to calculate the slope. It can be one of 'Horn', 'ZevenbergenThorne' for hill_shade,
-            slope or aspect. 'Wilson'. The literature suggests Zevenbergen & Thorne to be more suited to smooth
-            landscapes, whereas Horn's formula.
-            to perform better on rougher terrain.
-        vertical_exaggeration: Union[List, int, float]
-            Vertical exaggeration, the vertical exaggeration It is used to emphasize the
-            vertical features of the terrain.
-        path: str, optional, default is None
-            path to save the hill-shade raster.
-        creation_options: List[str], default is None.
-            Additional creation options for the output raster. if None, the default creation options
-            (['COMPRESS=DEFLATE', 'PREDICTOR=2']) will be used.
+        Args:
+            band: int, default is 0.
+                band index.
+            scale: Union[List, int, float]
+                the scale is the ratio of vertical units to horizontal. If the horizontal unit of the source DEM is
+                degrees (e.g., Lat/Long WGS84 projection), you can use scale=111120 if the vertical units are meters
+                (or scale=370400 if they are in feet).
+            zero_flat_surface: bool, default is False.
+                If True, the slope of a flat surface will be zero. If False, the slope of a flat surface will be
+                no_data_value.
+            algorithm: str, default is "Wilson".
+                The algorithm to calculate the slope. It can be one of 'Horn', 'ZevenbergenThorne' for hill_shade,
+                slope or aspect. 'Wilson'. The literature suggests Zevenbergen & Thorne to be more suited to smooth
+                landscapes, whereas Horn's formula.
+                to perform better on rougher terrain.
+            vertical_exaggeration: Union[List, int, float]
+                Vertical exaggeration, the vertical exaggeration It is used to emphasize the
+                vertical features of the terrain.
+            path: str, optional, default is None
+                path to save the hill-shade raster.
+            creation_options: List[str], default is None.
+                Additional creation options for the output raster. if None, the default creation options
+                (['COMPRESS=DEFLATE', 'PREDICTOR=2']) will be used.
 
 
-        Returns
-        -------
-        Dataset:
-            Dataset with the calculated slope, and the no_data_value is -9999.0.
+        Returns:
+            Dataset:
+                Dataset with the calculated slope, and the no_data_value is -9999.0.
 
-        Examples
-        --------
-        - First create a one band dataset, consisting of 10 columns and 10 rows, with random values between 0 and 15.
+        Examples:
+            - First create a one band dataset, consisting of 10 columns and 10 rows, with random values between 0 and 15.
+                ```python
+                >>> import numpy as np
+                >>> arr = np.random.randint(0, 15, size=(10, 10))
+                >>> dataset = Dataset.create_from_array(arr, top_left_corner=(0, 0), cell_size=0.05, epsg=4326)
+                ```
+            - Now let's create the slope for the dataset.
+                ```python
+                >>> aspect = dataset.aspect()
+                >>> cleo = slope.plot()
 
-            >>> import numpy as np
-            >>> arr = np.random.randint(0, 15, size=(10, 10))
-            >>> dataset = Dataset.create_from_array(arr, top_left_corner=(0, 0), cell_size=0.05, epsg=4326)
+                ```
+                ![slope](./../_images/dataset/slope.png)
 
-        - Now let's create the slope for the dataset.
-
-            >>> aspect = dataset.aspect()
-            >>> cleo = slope.plot()
-
-        .. image:: /_images/dataset/slope.png
-            :alt: Example Image
-            :align: center
-
-        See Also
-        --------
-        Dataset.hill_shade: create a hill-shade for a band in the Dataset.
-        Dataset.color_relief: create a color relief for a band in the Dataset.
+        See Also:
+            Dataset.hill_shade: create a hill-shade for a band in the Dataset.
+            Dataset.color_relief: create a color relief for a band in the Dataset.
         """
         if path is None:
             driver = "MEM"
